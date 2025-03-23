@@ -5,6 +5,7 @@ sys.path.append("..")
 import PathPlanning.utils as utils
 from PathPlanning.planner import Planner
 
+
 class PlannerRRTStar(Planner):
     """
     RRT* Planner for path planning.

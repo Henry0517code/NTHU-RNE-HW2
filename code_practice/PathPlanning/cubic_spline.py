@@ -7,29 +7,21 @@ def pos_int(p):
 def cubic_spline(x,y,interval=2):
     size = len(y)
     h = [x[i+1]-x[i] for i in range(len(x)-1)]
-    A = np.zeros((size, size), dtype=float)
+    A = np.zeros((size, size), dtype=np.float32)
     for i in range(size):
         if i==0:
             A[i,0] = 1
-            #A[i,0] = -h[i+1]
-            #A[i,1] = h[i+1] + h[i] 
-            #A[i,2] = -h[i]
         elif i==size-1:
             A[i,-1] = 1
-            #A[i,-3] = -h[i-1]
-            #A[i,-2] = h[i-2] + h[i-1] 
-            #A[i,-1] = -h[i-1]
         else:
             A[i,i-1] = h[i-1]
             A[i,i] = 2*(h[i-1]+h[i])
             A[i,i+1] = h[i]
-    #print(A)
 
-    B = np.zeros((size,1), dtype=float)
+    B = np.zeros((size,1), dtype=np.float32)
     for i in range(1,size-1):
         B[i,0] = (y[i+1]-y[i])/h[i] - (y[i]-y[i-1])/h[i-1]
     B = 6*B
-    #print(B)
 
     Ainv = np.linalg.pinv(A)
     m = Ainv.dot(B).T[0].tolist()
@@ -67,7 +59,6 @@ def cubic_spline_2d(path, interval=2):
     dist = np.hypot(np.array(x_diff),np.array(y_diff))
     dist_cum = np.cumsum(dist).tolist()
     dist_cum.insert(0,0)
-    #print(dist, dist_cum)
 
     x_list, dx_list, ddx_list = cubic_spline(dist_cum,x,interval)
     y_list, dy_list, ddy_list = cubic_spline(dist_cum,y,interval)
@@ -76,14 +67,13 @@ def cubic_spline_2d(path, interval=2):
     curv_list = (ddy * dx - ddx * dy) / ((dx ** 2 + dy ** 2)**(3 / 2))
     path_smooth = [(x_list[i], y_list[i], yaw_list[i], curv_list[i]) for i in range(len(x_list))]
     
-    #print(path_smooth)
     return path_smooth
 
 if __name__ == "__main__":
     path = [(20,50), (40,100), (80,120), (160,60)]
     path_smooth = cubic_spline_2d(path)
 
-    img = np.ones((200,200,3), dtype=float)
+    img = np.ones((200,200,3), dtype=np.float32)
     for p in path:
         cv2.circle(img, p, 3, (0.5,0.5,0.5), 2)
 
